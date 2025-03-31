@@ -11,8 +11,8 @@ qt_add_executable(tipptest
     mainwindow.cpp
     mainwindow.h
     mainwindow.ui
-    word.h word.cpp
-    character.h character.cpp
+
+    Character.h Character.cpp
 
 
 )

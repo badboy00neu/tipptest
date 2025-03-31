@@ -4,8 +4,13 @@
 #include <QMainWindow>
 #include <QKeyEvent>
 #include <QLabel>
+#include <QPushButton>
+#include <random>
 
-#include "word.h"
+#include "Character.h"
+
+
+using namespace std;
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -16,26 +21,29 @@ QT_END_NAMESPACE
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
-    word* currentWord;
+
     int position;
-    int wordIndex;
     int errorCount;
 
 public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
-    vector<word*> getWords();
-    vector<word*> createWords(vector<string>);
 
 private:
     Ui::MainWindow *ui;
     QLabel *keyLabel;
     QLabel *textTodo;
-    void nextWord();
-    vector<word*> words;
-    QString greenText(QString in, int position);
-    QString text;
-    QString checkedChar(QString text, QString input, int position);
+    QPushButton *refreshButton;
+
+
+    vector<Character*> actualText;
+    vector<Character*> generateText();
+    void setTextTodo(vector<Character*> text);
+    int getRandomNumber(int i);
+
+private slots:
+    void refreshAll();
+
 
 protected:
     void keyPressEvent(QKeyEvent *event) override; // Überschreiben der Methode

@@ -1,11 +1,11 @@
-#ifndef CHARACTER_H
-#define CHARACTER_H
+#ifndef Character_H
+#define Character_H
 
 #include <QChar>
 #include <QString>
 
 
-class character
+class Character
 {
 
 public:
@@ -15,12 +15,13 @@ public:
         incorrect,
     };
 
-    character();
-    character(QChar value);
+    Character();
+    Character(QChar value);
+    static Character *createNewSpace();
     State getState();
     void setState(State state);
     QChar getValue();
-    QString printValue();
+    QString print(bool isBold);
 
 
 private:
@@ -28,4 +29,4 @@ private:
     State state = untouched;
 };
 
-#endif // CHARACTER_H
+#endif // Character_H
