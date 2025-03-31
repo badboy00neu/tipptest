@@ -21,10 +21,26 @@ MainWindow::MainWindow(QWidget *parent)
     textTodo->setGeometry(350, 100, 500, 400);
     textTodo->setStyleSheet("font-size:24px;");
 
-    time = 60;   //Zeit in s
     countdown = new Countdown(time, this);
     countdown->setGeometry(50, 50, 200, 50);
 
+    time = 60; //Default Value
+    time10 = new QPushButton("10s", this);
+    time10->setGeometry(50, 100, 95, 30);
+    time10->setFocusPolicy(Qt::NoFocus);
+
+    time30 = new QPushButton("30s", this);
+    time30->setGeometry(155, 100, 95, 30);
+    time30->setFocusPolicy(Qt::NoFocus);
+
+    time60 = new QPushButton("1min", this);
+    time60->setGeometry(50, 130, 95, 30);
+    time60->setFocusPolicy(Qt::NoFocus);
+    time60->setDisabled(true);
+
+    time180 = new QPushButton("3min", this);
+    time180->setGeometry(155, 130, 95, 30);
+    time180->setFocusPolicy(Qt::NoFocus);
 
     QFont font("Monospace");
     font.setStyleHint(QFont::Monospace);
@@ -35,6 +51,19 @@ MainWindow::MainWindow(QWidget *parent)
     refreshButton->setGeometry(50, 20, 100, 30);
 
     connect(refreshButton, &QPushButton::clicked, this, &MainWindow::refreshAll);
+
+    connect(time10, &QPushButton::clicked, this, [this](){
+        selectTime(time10, 10);
+    });
+    connect(time30, &QPushButton::clicked, this, [this](){
+        selectTime(time30, 30);
+    });
+    connect(time60, &QPushButton::clicked, this, [this](){
+        selectTime(time60, 60);
+    });
+    connect(time180, &QPushButton::clicked, this, [this](){
+        selectTime(time180, 180);
+    });
 
     connect(countdown, &Countdown::countdownFinished, this, [this]() {
         this->position = this->actualText.size() + 1;
@@ -72,7 +101,9 @@ void MainWindow::keyPressEvent(QKeyEvent *event) {
             return;
         } else {
             if (timeRunning == false){
+                setTimeButtonsDisabled(true);
                 keyLabel->setText("");
+                countdown->setRemainingTime(time);
                 countdown->startCountdown();
                 timeRunning = true;
             }
@@ -97,6 +128,7 @@ void MainWindow::refreshAll(){
     timeRunning = false;
     countdown->setRemainingTime(time);
     countdown->hide();
+    selectButton(time);
 
     keyLabel->setText("Press a key to start");
     position = 0;
@@ -146,6 +178,37 @@ int MainWindow::getRandomNumber(int i) {
     return distribution(generator);
 }
 
+void MainWindow::selectTime(QPushButton *button, int time){
+    setTimeButtonsDisabled(false);
+    button->setDisabled(true);
+    this->time = time;
+}
+
+void MainWindow::selectButton(int time){
+    setTimeButtonsDisabled(false);
+    switch (time){
+        case 10:
+            time10->setDisabled(true);
+            break;
+        case 30:
+            time30->setDisabled(true);
+            break;
+        case 60:
+            time60->setDisabled(true);
+            break;
+        case 180:
+            time180->setDisabled(true);
+            break;
+    }
+}
+
+
+void MainWindow::setTimeButtonsDisabled(bool state){
+    time10->setDisabled(state);
+    time30->setDisabled(state);
+    time60->setDisabled(state);
+    time180->setDisabled(state);
+}
 
 
 

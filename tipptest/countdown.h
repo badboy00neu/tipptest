@@ -22,6 +22,7 @@ private slots:
 private:
     int remainingTime;
     QTimer *timer;
+    QString formatTime(int remainingTime);
 };
 
 #endif // COUNTDOWN_H

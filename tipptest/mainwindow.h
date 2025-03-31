@@ -35,6 +35,11 @@ private:
     QLabel *keyLabel;
     QLabel *textTodo;
     QPushButton *refreshButton;
+    QPushButton *time10;
+    QPushButton *time30;
+    QPushButton *time60;
+    QPushButton *time180;
+
     Countdown *countdown;
 
     vector<Character*> actualText;
@@ -43,6 +48,9 @@ private:
     int getRandomNumber(int i);
     bool timeRunning;
     int time;
+    void setTimeButtonsDisabled(bool state);
+    void selectTime(QPushButton *button, int time);
+    void selectButton(int time);
 
 
 private slots:
