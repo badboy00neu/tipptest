@@ -19,6 +19,19 @@ MainWindow::MainWindow(QWidget *parent)
     textTodo->setAlignment(Qt::AlignLeft);
     textTodo->setWordWrap(true);
     textTodo->setGeometry(350, 150, 500, 50);
+
+    words = getWords();
+    text="";
+    for (int i = 0; i < words.size(); i++){
+
+        text.append(' ' + (words.at(i))->printName());
+    }
+    text = text.trimmed();
+    textTodo->setText(text);
+
+    position = 0;
+    currentWord = words.at(position);
+    wordIndex = 0;
 }
 
 
@@ -28,27 +41,64 @@ MainWindow::~MainWindow()
 }
 
 void MainWindow::keyPressEvent(QKeyEvent *event) {
+    if (text.size() <= position){
+        keyLabel->setText("ENDE");
+        return;
+    }
     if (!event->text().isEmpty()) {
         QChar key = event->text().at(0);
-        QString currentText = textTodo->text();
 
         if (key == ''){
-            textTodo->setText(textTodo->text().removeLast());
+            keyLabel->setText(QString("zurück"));
+            position--;
+            textTodo->setText(greenText(text, position));
 
-        } else if ((key == ' ' && currentText.endsWith(' ')) || (!key.isLetterOrNumber() && key != ' ')){
+        } else if ((key == ' ' && text.endsWith(' ')) || (!key.isLetterOrNumber() && key != ' ')){
             qDebug() << "skipped";
             return;
         } else {
-            keyLabel->setText(QString("Last key: ") + key);
-            textTodo->setText(currentText + key);
-
+            qDebug() << key + QString::fromStdString("<>") + text.at(position);
+            if(key == text.at(position)){
+                keyLabel->setText(QString("richtig"));
+                position++;
+                textTodo->setText(greenText(text, position));
+            } else{
+                keyLabel->setText(QString("falsch"));
+                errorCount++;
+            }
         }
-        qDebug() << "Latest key pressed: " << key;
+        if (text.size() <= position){
+            keyLabel->setText("ENDE");
+        }
     }
 }
 
-vector<string> getWords(){
-    return {"Apple", "Banana", "Cherry", "Date", "Elderberry"};
+QString MainWindow::greenText(QString in, int position){
+    QString out = QString::fromStdString("<span style='color:green;'>");
+    out.append(in.first(position));
+    out.append("</span>");
+    qDebug() << in.size()-position;
+    out.append(in.last(in.size()-position));
+    return out;
+}
+
+void MainWindow::nextWord(){
+    position++;
+    currentWord = words.at(position);
+}
+
+
+
+vector<word*> MainWindow::getWords(){
+    return createWords({"Apple", "Banana", "Cherry", "Date", "Elderberry"});
+}
+
+vector<word*> MainWindow::createWords(vector<string> words){
+    vector<word*> out = {};
+    for (int i = 0; i < words.size(); i++){
+        out.push_back(new word(QString::fromStdString(words.at(i))));
+    }
+    return out;
 }
 
 
