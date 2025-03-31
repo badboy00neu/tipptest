@@ -19,6 +19,12 @@ MainWindow::MainWindow(QWidget *parent)
     textTodo->setAlignment(Qt::AlignLeft);
     textTodo->setWordWrap(true);
     textTodo->setGeometry(350, 100, 500, 400);
+    textTodo->setStyleSheet("font-size:24px;");
+
+    time = 60;   //Zeit in s
+    countdown = new Countdown(time, this);
+    countdown->setGeometry(50, 50, 200, 50);
+
 
     QFont font("Monospace");
     font.setStyleHint(QFont::Monospace);
@@ -26,8 +32,16 @@ MainWindow::MainWindow(QWidget *parent)
 
     refreshButton = new QPushButton("Restart", this);
     refreshButton->setFocusPolicy(Qt::NoFocus);
+    refreshButton->setGeometry(50, 20, 100, 30);
 
     connect(refreshButton, &QPushButton::clicked, this, &MainWindow::refreshAll);
+
+    connect(countdown, &Countdown::countdownFinished, this, [this]() {
+        this->position = this->actualText.size() + 1;
+        keyLabel->setText("STOP");
+        timeRunning = false;
+        countdown->hide();
+    });
 
 
     refreshAll();
@@ -41,7 +55,7 @@ MainWindow::~MainWindow()
 
 void MainWindow::keyPressEvent(QKeyEvent *event) {
     if (actualText.size() <= position){
-        keyLabel->setText("ENDE");
+        keyLabel->setText("STOP");
         return;
     }
     if (!event->text().isEmpty()) {
@@ -49,7 +63,6 @@ void MainWindow::keyPressEvent(QKeyEvent *event) {
         Character *actualChar = actualText.at(position);
         if (key == ''){
             if (position > 0){
-                keyLabel->setText(QString("zurück"));
                 position--;
             }
             actualChar = actualText.at(position);
@@ -58,14 +71,15 @@ void MainWindow::keyPressEvent(QKeyEvent *event) {
             qDebug() << "skipped";
             return;
         } else {
+            if (timeRunning == false){
+                keyLabel->setText("");
+                countdown->startCountdown();
+                timeRunning = true;
+            }
             if(key == actualChar->getValue()){
                 actualChar->setState(Character::correct);
-                keyLabel->setText(QString("richtig"));
-            } else{
+            } else {
                 actualChar->setState(Character::incorrect);
-                if(actualChar->getValue() != ' ' && key != ' '){
-                }
-                keyLabel->setText(QString("falsch"));
                 errorCount++;
             }
             position++;
@@ -80,6 +94,10 @@ void MainWindow::keyPressEvent(QKeyEvent *event) {
 }
 
 void MainWindow::refreshAll(){
+    timeRunning = false;
+    countdown->setRemainingTime(time);
+    countdown->hide();
+
     keyLabel->setText("Press a key to start");
     position = 0;
     actualText = generateText();
@@ -127,7 +145,6 @@ int MainWindow::getRandomNumber(int i) {
 
     return distribution(generator);
 }
-
 
 
 

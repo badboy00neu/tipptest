@@ -1,4 +1,4 @@
-#include "Character.h"
+#include "character.h"
 
 
 Character::Character() {}
@@ -26,10 +26,15 @@ QString Character::print(bool isCurrent){
         return QString::fromStdString("<b style='color: silver;'>") + value + QString::fromStdString("</b>");
     };
 
+
     if(state == correct){
         return QString::fromStdString("<span style='color: green;'>") + value + QString::fromStdString("</span>");
     } else if (state == incorrect){
-        return QString::fromStdString("<span style='color: red;'>") + value + QString::fromStdString("</span>");
+        if (value == ' '){
+            return QString::fromStdString("<span style='background: red;'>") + value + QString::fromStdString("</span>");
+        } else {
+            return QString::fromStdString("<span style='color: red;'>") + value + QString::fromStdString("</span>");
+        }
     } else {
         return value;
     }

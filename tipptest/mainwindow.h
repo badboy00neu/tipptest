@@ -7,7 +7,8 @@
 #include <QPushButton>
 #include <random>
 
-#include "Character.h"
+#include "countdown.h"
+#include "character.h"
 
 
 using namespace std;
@@ -34,12 +35,15 @@ private:
     QLabel *keyLabel;
     QLabel *textTodo;
     QPushButton *refreshButton;
-
+    Countdown *countdown;
 
     vector<Character*> actualText;
     vector<Character*> generateText();
     void setTextTodo(vector<Character*> text);
     int getRandomNumber(int i);
+    bool timeRunning;
+    int time;
+
 
 private slots:
     void refreshAll();

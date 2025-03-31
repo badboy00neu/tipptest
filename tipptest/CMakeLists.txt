@@ -13,6 +13,7 @@ qt_add_executable(tipptest
     mainwindow.ui
 
     Character.h Character.cpp
+    countdown.h countdown.cpp
 
 
 )
