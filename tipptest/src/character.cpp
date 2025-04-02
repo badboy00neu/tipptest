@@ -22,7 +22,7 @@ QChar Character::getValue(){
 }
 
 QString Character::print(bool isCurrent){
-    if (isCurrent == true){
+    if (isCurrent){
         return QString::fromStdString("<b style='color: silver;'>") + value + QString::fromStdString("</b>");
     };
 

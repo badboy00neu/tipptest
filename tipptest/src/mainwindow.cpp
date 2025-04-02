@@ -1,13 +1,10 @@
 #include "mainwindow.h"
-#include "ui_mainwindow.h"
 
 using namespace std;
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
-    , ui(new Ui::MainWindow)
 {
-    ui->setupUi(this);
     setFixedSize(1200, 600);
 
     keyLabel = new QLabel("Press a key to start", this);
@@ -28,21 +25,26 @@ MainWindow::MainWindow(QWidget *parent)
     time10 = new QPushButton("10s", this);
     time10->setGeometry(50, 100, 95, 30);
     time10->setFocusPolicy(Qt::NoFocus);
+    buttons.insert(10, time10);
 
     time30 = new QPushButton("30s", this);
     time30->setGeometry(155, 100, 95, 30);
     time30->setFocusPolicy(Qt::NoFocus);
+    buttons.insert(30, time30);
 
     time60 = new QPushButton("1min", this);
     time60->setGeometry(50, 130, 95, 30);
     time60->setFocusPolicy(Qt::NoFocus);
-    time60->setDisabled(true);
+    buttons.insert(60, time60);
 
     time180 = new QPushButton("3min", this);
     time180->setGeometry(155, 130, 95, 30);
     time180->setFocusPolicy(Qt::NoFocus);
+    buttons.insert(180, time180);
 
-    QFont font("Monospace");
+
+
+    QFont font("Menlo");
     font.setStyleHint(QFont::Monospace);
     textTodo->setFont(font);
 
@@ -53,16 +55,16 @@ MainWindow::MainWindow(QWidget *parent)
     connect(refreshButton, &QPushButton::clicked, this, &MainWindow::refreshAll);
 
     connect(time10, &QPushButton::clicked, this, [this](){
-        selectTime(time10, 10);
+        selectTime(time10);
     });
     connect(time30, &QPushButton::clicked, this, [this](){
-        selectTime(time30, 30);
+        selectTime(time30);
     });
     connect(time60, &QPushButton::clicked, this, [this](){
-        selectTime(time60, 60);
+        selectTime(time60);
     });
     connect(time180, &QPushButton::clicked, this, [this](){
-        selectTime(time180, 180);
+        selectTime(time180);
     });
 
     connect(countdown, &Countdown::countdownFinished, this, [this]() {
@@ -70,6 +72,7 @@ MainWindow::MainWindow(QWidget *parent)
         keyLabel->setText("STOP");
         timeRunning = false;
         countdown->hide();
+        countCharErrorsAndSuccess();
     });
 
 
@@ -79,12 +82,11 @@ MainWindow::MainWindow(QWidget *parent)
 
 MainWindow::~MainWindow()
 {
-    delete ui;
+
 }
 
 void MainWindow::keyPressEvent(QKeyEvent *event) {
     if (actualText.size() <= position){
-        keyLabel->setText("STOP");
         return;
     }
     if (!event->text().isEmpty()) {
@@ -100,7 +102,7 @@ void MainWindow::keyPressEvent(QKeyEvent *event) {
             qDebug() << "skipped";
             return;
         } else {
-            if (timeRunning == false){
+            if (!timeRunning){
                 setTimeButtonsDisabled(true);
                 keyLabel->setText("");
                 countdown->setRemainingTime(time);
@@ -111,7 +113,7 @@ void MainWindow::keyPressEvent(QKeyEvent *event) {
                 actualChar->setState(Character::correct);
             } else {
                 actualChar->setState(Character::incorrect);
-                errorCount++;
+                mistakeCount++;
             }
             position++;
         }
@@ -128,10 +130,16 @@ void MainWindow::refreshAll(){
     timeRunning = false;
     countdown->setRemainingTime(time);
     countdown->hide();
+    setTimeButtonsDisabled(false);
     selectButton(time);
 
-    keyLabel->setText("Press a key to start");
+    errorCount = 0;
+    mistakeCount = 0;
+    successCount = 0;
+    correctedCount = 0;
     position = 0;
+
+    keyLabel->setText("Press a key to start");
     actualText = generateText();
     setTextTodo(actualText);
 }
@@ -178,36 +186,43 @@ int MainWindow::getRandomNumber(int i) {
     return distribution(generator);
 }
 
-void MainWindow::selectTime(QPushButton *button, int time){
-    setTimeButtonsDisabled(false);
-    button->setDisabled(true);
-    this->time = time;
+void MainWindow::selectTime(QPushButton *button){
+    setTimeButtonsStyleToDefault();
+    button->setStyleSheet("text-decoration: underline;");
+    time = buttons.key(button);
 }
 
 void MainWindow::selectButton(int time){
-    setTimeButtonsDisabled(false);
-    switch (time){
-        case 10:
-            time10->setDisabled(true);
-            break;
-        case 30:
-            time30->setDisabled(true);
-            break;
-        case 60:
-            time60->setDisabled(true);
-            break;
-        case 180:
-            time180->setDisabled(true);
-            break;
-    }
+    setTimeButtonsStyleToDefault();
+    buttons.value(time)->setStyleSheet("text-decoration: underline;");
 }
 
 
-void MainWindow::setTimeButtonsDisabled(bool state){
-    time10->setDisabled(state);
-    time30->setDisabled(state);
-    time60->setDisabled(state);
-    time180->setDisabled(state);
+void MainWindow::setTimeButtonsStyleToDefault(){
+    for (int i = 0; i < buttons.count(); i++){
+        buttons.values().at(i)->setStyleSheet("");
+    }
+}
+
+void MainWindow::setTimeButtonsDisabled(bool disable) {
+    for (int i = 0; i < buttons.count(); i++) {
+        buttons.values().at(i)->setDisabled(disable);
+    }
+}
+
+void MainWindow::countCharErrorsAndSuccess(){
+    for (int i = 0; i < actualText.size(); i++){
+        if (actualText.at(i)->getState() == Character::incorrect){
+            errorCount++;
+        } else if (actualText.at(i)->getState() == Character::correct){
+            successCount++;
+        }
+    }
+    correctedCount = mistakeCount - errorCount;
+    qDebug() << "Errors: " << errorCount;
+    qDebug() << "Success: " << successCount;
+    qDebug() << "Mistakes: " << mistakeCount;
+    qDebug() << "Corrected Chars: " << correctedCount;
 }
 
 
