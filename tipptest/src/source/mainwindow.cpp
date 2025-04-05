@@ -17,11 +17,18 @@ MainWindow::MainWindow(QWidget *parent)
     resultLabel->setGeometry(50, 175, 200, 200);
     resultLabel->setStyleSheet("font-size: 18px;");
 
-    textTodo = new QLabel("", this);
+    scrollArea = new CustomScrollArea(this);
+    scrollArea->setStyleSheet("padding:5px;");
+    textTodo = new QLabel(scrollArea);
     textTodo->setAlignment(Qt::AlignLeft);
     textTodo->setWordWrap(true);
-    textTodo->setGeometry(350, 100, 500, 400);
+    scrollArea->setGeometry(350, 100, 500, 400);
     textTodo->setStyleSheet("font-size:24px;");
+    textTodo->setWordWrap(false);
+    scrollArea->setWidget(textTodo);
+    scrollArea->setWidgetResizable(true);
+    scrollArea->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    scrollArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 
     countdown = new Countdown(time, this);
     countdown->setGeometry(50, 50, 200, 50);
@@ -99,6 +106,10 @@ void MainWindow::keyPressEvent(QKeyEvent *event) {
         Character *actualChar = actualText.at(position);
         if (key == ''){
             if (position > 0){
+                if (actualChar->isFirstInLine()){
+                    currentLine--;
+                    scrollToLine(currentLine);
+                }
                 position--;
             }
             actualChar = actualText.at(position);
@@ -116,6 +127,10 @@ void MainWindow::keyPressEvent(QKeyEvent *event) {
                 errorCount++;
             }
             position++;
+            if(actualText.at(position)->isFirstInLine()){
+                currentLine++;
+                scrollToLine(currentLine);
+            }
         }
 
         setTextTodo(actualText);
@@ -143,7 +158,9 @@ void MainWindow::refreshAll(){
 
     errorCount = 0;
     position = 0;
+    currentLine = 0;
 
+    scrollToLine(position);
     infoLabel->setText("Press a key to start");
     resultLabel->setText("");
     actualText = generateText();
@@ -153,9 +170,13 @@ void MainWindow::refreshAll(){
 void MainWindow::setTextTodo(vector<Character*> text){
     QString builder = "";
     for (int i = 0; i < text.size(); i++){
+        if (text.at(i)->isFirstInLine()){
+            builder.append("<br>");
+        }
         builder.append(text.at(i)->print(i == position));
     }
     textTodo->setText(builder);
+
 }
 
 
@@ -171,14 +192,23 @@ vector<Character*> MainWindow::generateText(){
         "child", "adult", "parent", "room", "floor", "bed", "pillow", "wall", "picture", "clock",
         "hat", "shirt", "pants", "shoes", "bag", "box", "pen", "paper", "idea", "dream"
     };
-
-
+    int currentLineLength = 0;
     for (int i = 0; i < 500; i++){
+        bool overflow = false;
+
         string randomWord = words.at(getRandomNumber(words.size()-1));
+        if(currentLineLength + randomWord.size() > 32){   // Max characters per line
+            overflow = true;
+            currentLineLength = 0;
+        }
         for (int j = 0; j < randomWord.size(); j++){
-            out.push_back(new Character(randomWord.at(j)));
+            Character *newChar = new Character(randomWord.at(j));
+            newChar->setFirst(overflow && j == 0);
+            out.push_back(newChar);
+            currentLineLength ++;
         }
         out.push_back(Character::createNewSpace());
+        currentLineLength++;
     }
     return out;
 }
@@ -236,7 +266,11 @@ QString MainWindow::countCharErrorsAndSuccess(){
     return result;
 }
 
-
+void MainWindow::scrollToLine(int lineIndex){
+    int lineHeight = fontMetrics().height();
+    int yOffset = lineHeight * lineIndex;
+    scrollArea->verticalScrollBar()->setValue(yOffset);
+}
 
 
 

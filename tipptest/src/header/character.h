@@ -22,11 +22,14 @@ public:
     void setState(State state);
     QChar getValue();
     QString print(bool isBold);
+    bool isFirstInLine();
+    void setFirst(bool isFirst);
 
 
 private:
     QChar value;
     State state = untouched;
+    bool first;
 };
 
 #endif // Character_H

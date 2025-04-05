@@ -6,9 +6,12 @@
 #include <QLabel>
 #include <QPushButton>
 #include <random>
+#include <QScrollArea>
+# include <QScrollBar>
 
 #include "countdown.h"
 #include "character.h"
+#include "CustomScrollArea.h"
 
 
 using namespace std;
@@ -25,6 +28,7 @@ class MainWindow : public QMainWindow
 
     int position;
     int errorCount;   // Total mistakes made during Test
+    int currentLine;
 
 public:
     MainWindow(QWidget *parent = nullptr);
@@ -40,6 +44,7 @@ private:
     QPushButton *time30;
     QPushButton *time60;
     QPushButton *time180;
+    CustomScrollArea *scrollArea;
 
     Countdown *countdown;
 
@@ -56,6 +61,7 @@ private:
     void startTest();
     QMap<int, QPushButton*> buttons;
     QString countCharErrorsAndSuccess();
+    void scrollToLine(int lineIndex);
 
 
 private slots:

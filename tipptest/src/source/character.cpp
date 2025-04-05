@@ -24,8 +24,7 @@ QChar Character::getValue(){
 QString Character::print(bool isCurrent){
     if (isCurrent){
         return QString::fromStdString("<b style='color: silver;'>") + value + QString::fromStdString("</b>");
-    };
-
+    }
 
     if(state == correct){
         return QString::fromStdString("<span style='color: green;'>") + value + QString::fromStdString("</span>");
@@ -42,6 +41,14 @@ QString Character::print(bool isCurrent){
 
 void Character::setState(Character::State state){
     this->state = state;
+}
+
+bool Character::isFirstInLine() {
+    return first;
+}
+
+void Character::setFirst(bool isFirst) {
+    first = isFirst;
 }
 
 

@@ -13,6 +13,8 @@ qt_add_executable(tipptest
 
         src/header/character.h src/source/character.cpp
         src/header/countdown.h src/source/countdown.cpp
+        src/source/CustomScrollArea.cpp
+        src/header/CustomScrollArea.h
 
 
 )
