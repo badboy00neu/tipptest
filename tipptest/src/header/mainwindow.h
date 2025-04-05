@@ -24,10 +24,7 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 
     int position;
-    int mistakeCount;   // Total false characters during Test
-    int successCount;
-    int errorCount;     // false characters at the end of the test
-    int correctedCount;
+    int errorCount;   // Total mistakes made during Test
 
 public:
     MainWindow(QWidget *parent = nullptr);
@@ -35,8 +32,9 @@ public:
 
 private:
     Ui::MainWindow *ui;
-    QLabel *keyLabel;
+    QLabel *infoLabel;
     QLabel *textTodo;
+    QLabel *resultLabel;
     QPushButton *refreshButton;
     QPushButton *time10;
     QPushButton *time30;
@@ -55,8 +53,9 @@ private:
     void setTimeButtonsDisabled(bool disable);
     void selectTime(QPushButton *button);
     void selectButton(int time);
+    void startTest();
     QMap<int, QPushButton*> buttons;
-    void countCharErrorsAndSuccess();
+    QString countCharErrorsAndSuccess();
 
 
 private slots:

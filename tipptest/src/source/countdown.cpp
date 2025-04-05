@@ -1,4 +1,4 @@
-#include "countdown.h"
+#include "../header/countdown.h"
 
 Countdown::Countdown(int seconds, QWidget *parent)
     : QLCDNumber(parent), remainingTime(seconds) {

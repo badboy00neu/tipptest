@@ -1,4 +1,4 @@
-#include "mainwindow.h"
+#include "../header/mainwindow.h"
 
 using namespace std;
 
@@ -7,10 +7,15 @@ MainWindow::MainWindow(QWidget *parent)
 {
     setFixedSize(1200, 600);
 
-    keyLabel = new QLabel("Press a key to start", this);
-    keyLabel->setAlignment(Qt::AlignCenter);
-    keyLabel->setGeometry(50, 50, 200, 50);
-    keyLabel->setStyleSheet("font-size: 18px; border: 1px solid black; padding: 5px;");
+    infoLabel = new QLabel("Press a key to start", this);
+    infoLabel->setAlignment(Qt::AlignCenter);
+    infoLabel->setGeometry(50, 50, 200, 50);
+    infoLabel->setStyleSheet("font-size: 18px; border: 1px solid black; padding: 5px;");
+
+    resultLabel = new QLabel("", this);
+    resultLabel->setAlignment(Qt::AlignTop);
+    resultLabel->setGeometry(50, 175, 200, 200);
+    resultLabel->setStyleSheet("font-size: 18px;");
 
     textTodo = new QLabel("", this);
     textTodo->setAlignment(Qt::AlignLeft);
@@ -69,10 +74,10 @@ MainWindow::MainWindow(QWidget *parent)
 
     connect(countdown, &Countdown::countdownFinished, this, [this]() {
         this->position = this->actualText.size() + 1;
-        keyLabel->setText("STOP");
+        infoLabel->setText("STOP");
         timeRunning = false;
         countdown->hide();
-        countCharErrorsAndSuccess();
+        resultLabel->setText(countCharErrorsAndSuccess());
     });
 
 
@@ -99,21 +104,16 @@ void MainWindow::keyPressEvent(QKeyEvent *event) {
             actualChar = actualText.at(position);
             actualChar->setState(Character::untouched);
         } else if (!key.isLetterOrNumber() && key != ' '){
-            qDebug() << "skipped";
             return;
         } else {
             if (!timeRunning){
-                setTimeButtonsDisabled(true);
-                keyLabel->setText("");
-                countdown->setRemainingTime(time);
-                countdown->startCountdown();
-                timeRunning = true;
+                startTest();
             }
             if(key == actualChar->getValue()){
                 actualChar->setState(Character::correct);
             } else {
                 actualChar->setState(Character::incorrect);
-                mistakeCount++;
+                errorCount++;
             }
             position++;
         }
@@ -121,9 +121,17 @@ void MainWindow::keyPressEvent(QKeyEvent *event) {
         setTextTodo(actualText);
 
         if (actualText.size() <= position){
-            keyLabel->setText("ENDE");
+            infoLabel->setText("ENDE");
         }
     }
+}
+
+void MainWindow::startTest(){
+    setTimeButtonsDisabled(true);
+    infoLabel->setText("");
+    countdown->setRemainingTime(time);
+    countdown->startCountdown();
+    timeRunning = true;
 }
 
 void MainWindow::refreshAll(){
@@ -134,12 +142,10 @@ void MainWindow::refreshAll(){
     selectButton(time);
 
     errorCount = 0;
-    mistakeCount = 0;
-    successCount = 0;
-    correctedCount = 0;
     position = 0;
 
-    keyLabel->setText("Press a key to start");
+    infoLabel->setText("Press a key to start");
+    resultLabel->setText("");
     actualText = generateText();
     setTextTodo(actualText);
 }
@@ -165,7 +171,6 @@ vector<Character*> MainWindow::generateText(){
         "child", "adult", "parent", "room", "floor", "bed", "pillow", "wall", "picture", "clock",
         "hat", "shirt", "pants", "shoes", "bag", "box", "pen", "paper", "idea", "dream"
     };
-
 
 
     for (int i = 0; i < 500; i++){
@@ -210,19 +215,25 @@ void MainWindow::setTimeButtonsDisabled(bool disable) {
     }
 }
 
-void MainWindow::countCharErrorsAndSuccess(){
+QString MainWindow::countCharErrorsAndSuccess(){
+    int mistakeCount = 0;
+    int successCount = 0;
     for (int i = 0; i < actualText.size(); i++){
         if (actualText.at(i)->getState() == Character::incorrect){
-            errorCount++;
+            mistakeCount++;
         } else if (actualText.at(i)->getState() == Character::correct){
             successCount++;
         }
     }
-    correctedCount = mistakeCount - errorCount;
-    qDebug() << "Errors: " << errorCount;
-    qDebug() << "Success: " << successCount;
-    qDebug() << "Mistakes: " << mistakeCount;
-    qDebug() << "Corrected Chars: " << correctedCount;
+    int correctedCount = errorCount - mistakeCount;
+    double totalCount = errorCount + successCount;
+    int netWpm = round(((totalCount/5.00) - (mistakeCount / 5.00)) / (time / 60.00));
+    QString result = "";
+    result.append("WPM: " + QString::number(netWpm) + "\n");
+    result.append("Total characters: " + QString::number(totalCount) + "\n");
+    result.append("False characters: " + QString::number(mistakeCount) + "\n");
+    result.append("Corrected characters: " + QString::number(correctedCount));
+    return result;
 }
 
 

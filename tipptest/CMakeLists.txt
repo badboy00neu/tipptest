@@ -7,12 +7,12 @@ qt_standard_project_setup()
 
 qt_add_executable(tipptest
     WIN32 MACOSX_BUNDLE
-        src/main.cpp
-        src/mainwindow.cpp
-        src/mainwindow.h
+        src/source/main.cpp
+        src/source/mainwindow.cpp
+        src/header/mainwindow.h
 
-        src/character.h src/character.cpp
-        src/countdown.h src/countdown.cpp
+        src/header/character.h src/source/character.cpp
+        src/header/countdown.h src/source/countdown.cpp
 
 
 )
