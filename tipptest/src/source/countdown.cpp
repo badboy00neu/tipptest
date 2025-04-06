@@ -1,7 +1,7 @@
 #include "../header/countdown.h"
 
 Countdown::Countdown(int seconds, QWidget *parent)
-    : QLCDNumber(parent), remainingTime(seconds) {
+        : QLCDNumber(parent), remainingTime(seconds) {
     setSegmentStyle(Filled);
     display(formatTime(remainingTime));
 
@@ -31,13 +31,13 @@ void Countdown::updateCountdown() {
     }
 }
 
-void Countdown::setRemainingTime(int time){
+void Countdown::setRemainingTime(int time) {
     stopCountdown();
     remainingTime = time;
     display(formatTime(remainingTime));
 }
 
-QString Countdown::formatTime(int remainingTime){
+QString Countdown::formatTime(int remainingTime) {
     int minutes = remainingTime / 60;
     int seconds = remainingTime % 60;
     return QString("%1:%2")

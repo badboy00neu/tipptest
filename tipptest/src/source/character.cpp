@@ -1,36 +1,35 @@
 #include "../header/character.h"
 
-
-Character::Character() {}
-
-Character::Character(QChar value){
+Character::Character(QChar value) {
     this->value = value;
     this->state = untouched;
+    this->first = false;
 }
 
-Character *Character::createNewSpace(){
+Character *Character::createNewSpace() {
     Character *space = new Character(' ');
     return space;
 }
 
-Character::State Character::getState(){
+Character::State Character::getState() {
     return state;
 }
 
-QChar Character::getValue(){
+QChar Character::getValue() {
     return value;
 }
 
-QString Character::print(bool isCurrent){
-    if (isCurrent){
+QString Character::print(bool isCurrent) {
+    if (isCurrent) {
         return QString::fromStdString("<b style='color: silver;'>") + value + QString::fromStdString("</b>");
     }
 
-    if(state == correct){
+    if (state == correct) {
         return QString::fromStdString("<span style='color: green;'>") + value + QString::fromStdString("</span>");
-    } else if (state == incorrect){
-        if (value == ' '){
-            return QString::fromStdString("<span style='background: red;'>") + value + QString::fromStdString("</span>");
+    } else if (state == incorrect) {
+        if (value == ' ') {
+            return QString::fromStdString("<span style='background: red;'>") + value +
+                   QString::fromStdString("</span>");
         } else {
             return QString::fromStdString("<span style='color: red;'>") + value + QString::fromStdString("</span>");
         }
@@ -39,7 +38,7 @@ QString Character::print(bool isCurrent){
     }
 }
 
-void Character::setState(Character::State state){
+void Character::setState(Character::State state) {
     this->state = state;
 }
 

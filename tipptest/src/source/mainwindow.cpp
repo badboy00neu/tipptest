@@ -4,6 +4,8 @@ using namespace std;
 
 MainWindow::MainWindow(QWidget *parent)
         : QMainWindow(parent) {
+
+    // set Styles
     setFixedSize(1200, 600);
 
     infoLabel = new QLabel("Press a key to start", this);
@@ -16,23 +18,30 @@ MainWindow::MainWindow(QWidget *parent)
     resultLabel->setGeometry(50, 175, 200, 200);
     resultLabel->setStyleSheet("font-size: 18px;");
 
+    // main text
     scrollArea = new CustomScrollArea(this);
-    scrollArea->setStyleSheet("padding:5px; padding-top: 20px; padding-bottom: 20px;");
     textTodo = new QLabel(scrollArea);
-    textTodo->setAlignment(Qt::AlignLeft);
-    textTodo->setWordWrap(true);
+
+    scrollArea->setStyleSheet("padding:5px; padding-top: 20px; padding-bottom: 20px;");
     scrollArea->setGeometry(350, 100, 500, 400);
-    textTodo->setStyleSheet("font-size:24px;");
-    textTodo->setWordWrap(false);
     scrollArea->setWidget(textTodo);
     scrollArea->setWidgetResizable(true);
     scrollArea->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     scrollArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 
-    time = 60; //Default Value
+    QFont font("Menlo");
+    font.setStyleHint(QFont::Monospace);
+    textTodo->setFont(font);
+    textTodo->setAlignment(Qt::AlignLeft);
+    textTodo->setWordWrap(true);
+    textTodo->setStyleSheet("font-size:24px;");
+    textTodo->setWordWrap(false);
+
+    time = 60; //Default duration
     countdown = new Countdown(time, this);
     countdown->setGeometry(50, 50, 200, 50);
 
+    // time-select buttons
     time10 = new QPushButton("10s", this);
     time10->setGeometry(50, 100, 95, 30);
     time10->setFocusPolicy(Qt::NoFocus);
@@ -52,11 +61,6 @@ MainWindow::MainWindow(QWidget *parent)
     time180->setGeometry(155, 130, 95, 30);
     time180->setFocusPolicy(Qt::NoFocus);
     buttons.insert(180, time180);
-
-
-    QFont font("Menlo");
-    font.setStyleHint(QFont::Monospace);
-    textTodo->setFont(font);
 
     refreshButton = new QPushButton("Restart", this);
     refreshButton->setFocusPolicy(Qt::NoFocus);
@@ -90,14 +94,15 @@ MainWindow::~MainWindow() {
     actualText.clear();
 }
 
+// handles users keyboard input
 void MainWindow::keyPressEvent(QKeyEvent *event) {
-    if (testEnd) {
+    if (testEnd) {  //waiting for refresh
         return;
     }
-    if (!event->text().isEmpty()) {
+    if (!event->text().isEmpty()) {         // ignore empty input
         QChar key = event->text().at(0);
         Character *actualChar = actualText.at(position);
-        if (key == '') {
+        if (key == '') {   // delete
             if (position > 0) {
                 if (actualChar->isFirstInLine()) {
                     currentLine--;
@@ -107,34 +112,34 @@ void MainWindow::keyPressEvent(QKeyEvent *event) {
             }
             actualChar = actualText.at(position);
             actualChar->setState(Character::untouched);
-        } else if (!key.isLetterOrNumber() && key != ' ') {
+        } else if (!key.isLetterOrNumber() && key != ' ') { // ignore invalid input
             return;
         } else {
             if (!testRunning) {
                 startTest();
             }
-            if (key == actualChar->getValue()) {
+            if (key == actualChar->getValue()) {    // correct
                 actualChar->setState(Character::correct);
-            } else {
+            } else {                                // incorrect
                 actualChar->setState(Character::incorrect);
                 errorCount++;
             }
             position++;
-            if (position < actualText.size() && actualText.at(position)->isFirstInLine()) {
+            if (position < actualText.size() && actualText.at(position)->isFirstInLine()) { // auto-scroll to next line
                 currentLine++;
                 scrollToLine(currentLine);
             }
         }
-
         setTextTodo(actualText);
 
-        if (currentLine+14 >= lineCount) { // mehr Wörter laden
-            vector<Character*> moreText = generateText(80);
+        if (currentLine + 14 >= lineCount) { // load more words in advance if necessary
+            vector<Character *> moreText = generateText(80);
             actualText.insert(actualText.end(), moreText.begin(), moreText.end());
         }
     }
 }
 
+// sets elements to start a test
 void MainWindow::startTest() {
     setTimeButtonsDisabled(true);
     infoLabel->setText("");
@@ -143,6 +148,7 @@ void MainWindow::startTest() {
     testRunning = true;
 }
 
+// sets elements to be in the end state after a finished test
 void MainWindow::endTest() {
     testEnd = true;
     infoLabel->setText("STOP");
@@ -151,7 +157,7 @@ void MainWindow::endTest() {
     resultLabel->setText(countCharErrorsAndSuccess());
 }
 
-
+// resets the elements to be ready to start a test
 void MainWindow::refreshAll() {
     testEnd = false;
     testRunning = false;
@@ -173,6 +179,7 @@ void MainWindow::refreshAll() {
     setTextTodo(actualText);
 }
 
+// sets the main text with correct style
 void MainWindow::setTextTodo(vector<Character *> text) {
     QString builder = "";
     for (int i = 0; i < text.size(); i++) {
@@ -184,7 +191,7 @@ void MainWindow::setTextTodo(vector<Character *> text) {
     textTodo->setText(builder);
 }
 
-
+// generates the random text as Characters
 vector<Character *> MainWindow::generateText(int count) {
     vector<Character *> out = {};
     vector<string> words = {
@@ -197,12 +204,12 @@ vector<Character *> MainWindow::generateText(int count) {
             "child", "adult", "parent", "room", "floor", "bed", "pillow", "wall", "picture", "clock",
             "hat", "shirt", "pants", "shoes", "bag", "box", "pen", "paper", "idea", "dream"
     };
-    int currentLineLength = 0;
-    for (int i = 0; i < count; i++){
+    int currentLineLength = lastLineLength;
+    for (int i = 0; i < count; i++) {
         bool overflow = false;
 
-        string randomWord = words.at(getRandomNumber(words.size()-1));
-        if(currentLineLength + randomWord.size() > 32){   // Max characters per line
+        const string &randomWord = words.at(getRandomNumber(words.size() - 1));
+        if (currentLineLength + randomWord.size() > 32) {   // Max characters per line exceeded
             overflow = true;
             lineCount++;
             currentLineLength = 0;
@@ -220,45 +227,49 @@ vector<Character *> MainWindow::generateText(int count) {
     return out;
 }
 
+// generates a random number from 0 to i
 int MainWindow::getRandomNumber(int i) {
     std::random_device rd;
     std::mt19937 generator(rd());
     std::uniform_int_distribution<> distribution(0, i);
-
     return distribution(generator);
 }
 
+// sets the time based on the pressed button
 void MainWindow::selectTime(QPushButton *button) {
     setTimeButtonsStyleToDefault();
     button->setStyleSheet("text-decoration: underline;");
     time = buttons.key(button);
 }
 
-void MainWindow::selectButton(int time) {
+// selects a button based on the set time
+void MainWindow::selectButton(int timeToSelect) {
     setTimeButtonsStyleToDefault();
-    buttons.value(time)->setStyleSheet("text-decoration: underline;");
+    buttons.value(timeToSelect)->setStyleSheet("text-decoration: underline;");
 }
 
-
+// resets the buttons style
 void MainWindow::setTimeButtonsStyleToDefault() {
     for (int i = 0; i < buttons.count(); i++) {
         buttons.values().at(i)->setStyleSheet("");
     }
 }
 
+// disable = true: disables all buttons, else enables them
 void MainWindow::setTimeButtonsDisabled(bool disable) {
     for (int i = 0; i < buttons.count(); i++) {
         buttons.values().at(i)->setDisabled(disable);
     }
 }
 
+// calculates the result and generates a formatted string
 QString MainWindow::countCharErrorsAndSuccess() {
     int mistakeCount = 0;
     int successCount = 0;
-    for (int i = 0; i < actualText.size(); i++) {
-        if (actualText.at(i)->getState() == Character::incorrect) {
+    for (auto &i: actualText) {
+        if (i->getState() == Character::incorrect) {
             mistakeCount++;
-        } else if (actualText.at(i)->getState() == Character::correct) {
+        } else if (i->getState() == Character::correct) {
             successCount++;
         }
     }
@@ -273,6 +284,7 @@ QString MainWindow::countCharErrorsAndSuccess() {
     return result;
 }
 
+// scrolls the main text to the line of lineIndex
 void MainWindow::scrollToLine(int lineIndex) {
     int lineHeight = textTodo->fontMetrics().height();
     int yOffset = lineHeight * lineIndex;

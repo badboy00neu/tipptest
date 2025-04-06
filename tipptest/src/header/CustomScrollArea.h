@@ -9,12 +9,13 @@
 #include <QScrollArea>
 #include <QWheelEvent>
 
+// A Scroll Area with disabled scrolling by mouse wheel
 class CustomScrollArea : public QScrollArea {
-    public:
-        CustomScrollArea(QWidget *parent = nullptr);
+public:
+    CustomScrollArea(QWidget *parent = nullptr);
 
-    protected:
-        void wheelEvent(QWheelEvent *event) override;
+protected:
+    void wheelEvent(QWheelEvent *event) override;
 };
 
 
