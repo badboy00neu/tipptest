@@ -1,7 +1,7 @@
 # Evironment
 
 - MacOs (developed on MacOs Sequoia, Vers. 15.4)
-- installed QT (Vers. 6.5)
+- installed QT for desktop development (Vers. 6.5) via https://www.qt.io/download-qt-installer-oss
 
 # About the project
 TypingTest is a C++/Qt-based application that simulates an interactive speed typing test environment.
