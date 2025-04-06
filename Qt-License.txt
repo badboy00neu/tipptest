@@ -1,0 +1,2 @@
+This project uses the Qt framework under the LGPLv3 license.
+For the full license text, see: https://doc.qt.io/qt-6/licenses.html
