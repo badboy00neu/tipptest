@@ -4,9 +4,8 @@
 #include <QChar>
 #include <QString>
 
-
-class Character
-{
+// Represents a single character of the text
+class Character {
 
 public:
     enum State {
@@ -15,14 +14,20 @@ public:
         incorrect,
     };
 
-    Character();
     Character(QChar value);
+
     static Character *createNewSpace();
+
     State getState();
+
     void setState(State state);
+
     QChar getValue();
+
     QString print(bool isBold);
+
     bool isFirstInLine();
+
     void setFirst(bool isFirst);
 
 
