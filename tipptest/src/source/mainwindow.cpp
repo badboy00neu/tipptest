@@ -94,7 +94,10 @@ MainWindow::MainWindow(QWidget *parent)
 
 MainWindow::~MainWindow()
 {
-
+    for (Character* c : actualText) {
+        delete c;
+    }
+    actualText.clear();
 }
 
 void MainWindow::keyPressEvent(QKeyEvent *event) {

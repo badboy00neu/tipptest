@@ -11,6 +11,7 @@ Countdown::Countdown(int seconds, QWidget *parent)
 }
 
 void Countdown::startCountdown() {
+    timer->stop();
     show();
     timer->start(1000);
 }
@@ -37,15 +38,10 @@ void Countdown::setRemainingTime(int time){
 }
 
 QString Countdown::formatTime(int remainingTime){
-    std::string mm = std::to_string(remainingTime / 60);
-    std::string ss = std::to_string(remainingTime % 60);
-    if (mm.size()<2){
-        mm.insert(0, "0");
-    }
-    if (ss.size()<2){
-        ss.insert(0, "0");
-    }
-
-    return QString::fromStdString(mm) + ":" + QString::fromStdString(ss);
+    int minutes = remainingTime / 60;
+    int seconds = remainingTime % 60;
+    return QString("%1:%2")
+            .arg(minutes, 2, 10, QLatin1Char('0'))
+            .arg(seconds, 2, 10, QLatin1Char('0'));
 }
 
