@@ -62,11 +62,11 @@ MainWindow::MainWindow(QWidget *parent)
     time180->setFocusPolicy(Qt::NoFocus);
     buttons.insert(180, time180);
 
-    refreshButton = new QPushButton("Restart", this);
-    refreshButton->setFocusPolicy(Qt::NoFocus);
-    refreshButton->setGeometry(50, 20, 100, 30);
+    restartButton = new QPushButton("Restart", this);
+    restartButton->setFocusPolicy(Qt::NoFocus);
+    restartButton->setGeometry(50, 20, 100, 30);
 
-    connect(refreshButton, &QPushButton::clicked, this, &MainWindow::refreshAll);
+    connect(restartButton, &QPushButton::clicked, this, &MainWindow::refreshAll);
 
     connect(time10, &QPushButton::clicked, this, [this]() {
         selectTime(time10);

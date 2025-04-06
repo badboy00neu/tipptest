@@ -40,7 +40,7 @@ private:
     QLabel *infoLabel;
     QLabel *textTodo;
     QLabel *resultLabel;
-    QPushButton *refreshButton;
+    QPushButton *restartButton;
     QPushButton *time10;
     QPushButton *time30;
     QPushButton *time60;
