@@ -1,7 +1,7 @@
 # Evironment
 
 - MacOs (developed on MacOs Sequoia, Vers. 15.4)
-- installed QT (Vers. 6.5)
+- installed QT (Vers. 6.9)
 
 # About the project
 TypingTest is a C++/Qt-based application that simulates an interactive speed typing test environment.
@@ -13,8 +13,9 @@ At the end of each session, the app provides detailed feedback, including:
 - Corrected Errors
 
 # Libraries
-- QT (Vers. 6.5)
-- c++ Standard Library
+- QT (Vers. 6.9)
+- C++ Standard Library
 
 # External Sources
 - used formula for net wpm from https://www.typingtyping.com/wpm-calculator/
+- ChatGPT was used to assist with wording, clarification of technical concepts, and code-related questions. The final content was reviewed, verified, and written by the author.
