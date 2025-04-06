@@ -49,11 +49,14 @@ private:
     Countdown *countdown;
 
     vector<Character*> actualText;
-    vector<Character*> generateText();
+    vector<Character*> generateText(int count);
     void setTextTodo(vector<Character*> text);
     int getRandomNumber(int i);
-    bool timeRunning;
+    bool testRunning;
+    bool testEnd;
     int time;
+    int lineCount;
+    int lastLineLength;
     void setTimeButtonsStyleToDefault();
     void setTimeButtonsDisabled(bool disable);
     void selectTime(QPushButton *button);
@@ -62,10 +65,12 @@ private:
     QMap<int, QPushButton*> buttons;
     QString countCharErrorsAndSuccess();
     void scrollToLine(int lineIndex);
+    const int charsPerLine = 32;
 
 
 private slots:
     void refreshAll();
+    void endTest();
 
 
 protected:
