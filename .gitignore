@@ -3,3 +3,4 @@ tipptest/cmake-build-debug/.ninja_deps
 tipptest/cmake-build-debug/.ninja_log
 /tipptest/cmake-build-debug/.cmake/api/v1/reply
 tipptest/cmake-build-debug/Testing/Temporary/LastTest.log
+.DS_Store
